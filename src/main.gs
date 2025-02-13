@@ -24,17 +24,32 @@ function analyzeRFQEmailsDaily() {
 		for (const message of messages) {
 		  const messageId = message.getId();
   
-		  // ✅ Skip if already processed
-		  if (PropertiesService.getScriptProperties().getProperty(messageId)) continue;
+          // ✅ Skip if message has already been processed (using Message ID)
+          if (PropertiesService.getScriptProperties().getProperty(messageId)) {
+			Logger.log(`⏩ Skipping message ${messageId} (Already processed)`);
+			continue;
+		  }
   
 		  const emailContent = {
 			body: message.getPlainBody(),
 			subject: message.getSubject()
 		  };
+
+		  if (CONFIG.GMAIL.EXCLUDED_SUBJECTS.some(subject => 
+			emailContent.subject.includes(subject))) {
+			Logger.log(`⏩ Skipping "${emailContent.subject}" (Excluded subject)`);
+			continue;
+		  }
   
 		  // ✅ Extract RFQ details
 		  const rfqDetails = extractRFQDetails(emailContent.body, emailContent.subject);
-		  if (!rfqDetails.eventName) continue;
+		  if (!rfqDetails.eventName || !rfqDetails.referenceNumber) continue;
+
+          // ✅ Skip if RFQ Reference Number has already been processed
+          if (isRFQProcessed(rfqDetails.referenceNumber)) {
+			Logger.log(`⏩ Skipping RFQ ${rfqDetails.referenceNumber} (Already logged)`);
+			continue;
+		  }
   
 		  // ✅ Allow all RFQs except clear mismatches
 		  if (!isExcludedRFQ(rfqDetails)) {
@@ -50,12 +65,12 @@ function analyzeRFQEmailsDaily() {
   
 			  // ✅ Mark as important and apply label
 			  thread.markImportant();
-			  applyLabel(thread, "FGV Chemical RFQ");
+			  applyLabel(thread, CONFIG.GMAIL.LABELS.CHEMICAL_RFQ);
 			}
 		  }
   
 		  // ✅ Mark message as processed
-		  markMessageAsProcessed(messageId);
+		  markMessageAsProcessed(rfqDetails.referenceNumber, messageId);
 		}
 	  }
   

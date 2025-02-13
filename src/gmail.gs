@@ -46,11 +46,6 @@ function isLikelyChemicalRFQ(rfqDetails) {
 }
 
 
-// ✅ Mark Message as Processed
-function markMessageAsProcessed(messageId) {
-  PropertiesService.getScriptProperties().setProperty(messageId, "processed");
-}
-
 // ✅ Apply Gmail Label to Important RFQs
 function applyLabel(thread, labelName = CONFIG.GMAIL.LABELS.CHEMICAL_RFQ) {
   try {

@@ -21,13 +21,14 @@ const CONFIG = {
         SEARCH_QUERY: 'label:FGV-RFQ newer_than:1d',
         LABELS: {
             CHEMICAL_RFQ: 'FGV Chemical RFQ'
-        }
+        },
+        EXCLUDED_SUBJECTS: ['Event Ended']
     },
     SCRIPT_PROPERTIES: {
         API_COUNT_MONTH: "API_COUNT_MONTH",
         MONTHLY_TOKENS: "MONTHLY_TOKENS",
         MONTHLY_COST: "MONTHLY_COST"
-    }
+    },
     RFQ: {
         RELEVANT_KEYWORDS: [
             "chemical", "bahan kimia", "soda", "alum", "polymer", 
